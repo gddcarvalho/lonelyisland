@@ -1,4 +1,4 @@
-<?php  
+<?php include_once("./views/home.html"); 
 
 $dbopts = parse_url(getenv('DATABASE_URL'));
 $app->register(new Herrera\Pdo\PdoServiceProvider(),
@@ -24,7 +24,5 @@ $app->get('/db/', function() use($app) {
     'names' => $names
   ));
 });
-
-include_once("./views/home.html");
 
 ?>
