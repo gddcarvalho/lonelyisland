@@ -25,6 +25,6 @@ $app->get('/db/', function() use($app) {
   ));
 });
 
-include_once("home.html");
+include_once("views/home.html");
 
 ?>
