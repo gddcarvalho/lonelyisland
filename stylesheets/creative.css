@@ -263,6 +263,10 @@ header .header-content .header-content-inner p {
     max-width: 400px;
 }
 
+.rank{
+    margin-left:100px;
+}
+
 @media(min-width:992px) {
     .service-box {
         margin: 20px auto 0;
