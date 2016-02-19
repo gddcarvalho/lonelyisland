@@ -1,36 +1,40 @@
 <?php 
 $dbconn = pg_connect(getenv('CONN_STRING'));
 
-$query = "CREATE TABLE `user` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(100) NOT NULL,
-  `password` varchar(100) NOT NULL,
-  `created_at` date,
-  `updated_at` date,
-  `inactivation_date` date,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+$query1 = "CREATE TABLE members (
+  id SERIAL NOT NULL,
+  username varchar(100) NOT NULL,
+  password varchar(100) NOT NULL,
+  gc_seals integer,
+  position integer,
+  created_at date,
+  updated_at date,
+  inactivation_date date,
+  PRIMARY KEY (id)
+);";
 
-$query .= "CREATE TRIGGER trUserCreationDate ON user
+$query2 = "CREATE TRIGGER trUserCreationDate ON members
   FOR INSERT 
   AS
-  UPDATE user SET user.created_at=getdate()
-  FROM user INNER JOIN Inserted ON user.id= Inserted.id";
+  UPDATE members SET members.created_at=getdate()
+  FROM members INNER JOIN Inserted ON members.id= Inserted.id";
 
-$query .= "CREATE TRIGGER trUserUpdateDate ON user
+$query3 = "CREATE TRIGGER trUserUpdateDate ON members
   FOR UPDATE 
   AS
-  UPDATE user SET user.updated_at=getdate()
-  FROM user INNER JOIN Inserted ON user.id= Inserted.id";
+  UPDATE members SET members.updated_at=getdate()
+  FROM members INNER JOIN Inserted ON members.id= Inserted.id";
 
 
-$result = pg_query($dbconn, $query);
+$result1 = pg_query($dbconn, $query1);
+$result2 = pg_query($dbconn, $query2);
+$result3 = pg_query($dbconn, $query3);
 
-if (!$result) {
+if ((!$result1) || (!$result2) || (!$result3))_ {
   $message  = 'Invalid query: ' . "\n";
   $message .= 'Whole query: ' . $query;
   die($message);
-}
+};
 
 pg_close($dbconn);
 
