@@ -30,11 +30,11 @@ $result1 = pg_query($dbconn, $query1);
 $result2 = pg_query($dbconn, $query2);
 $result3 = pg_query($dbconn, $query3);
 
-if ((!$result1) || (!$result2) || (!$result3))_ {
+if ((!$result1) || (!$result2) || (!$result3)){
   $message  = 'Invalid query: ' . "\n";
   $message .= 'Whole query: ' . $query;
   die($message);
-};
+}
 
 pg_close($dbconn);
 
