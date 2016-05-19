@@ -1,54 +1,50 @@
-<?php include_once("./views/home.html"); 
+<?php 
+$dbconn = pg_connect(getenv('CONN_STRING'));
 
-$dbopts = parse_url(getenv('DATABASE_URL'));
-$app->register(new Herrera\Pdo\PdoServiceProvider(),
-  array(
-    'pdo.dsn' => 'pgsql:dbname='.ltrim($dbopts["path"],'/').';host='.$dbopts["host"],
-    'pdo.port' => $dbopts["port"],
-    'pdo.username' => $dbopts["user"],
-    'pdo.password' => $dbopts["pass"]
-  )
-);
+$query1 = "CREATE TABLE members (
+  id SERIAL NOT NULL,
+  username varchar(100) NOT NULL,
+  password varchar(100) NOT NULL,
+  display_name varchar(100),
+  bio varchar(140),
+  gc_seals integer,
+  position integer,
+  created_at date,
+  updated_at date,
+  inactivation_date date,
+  PRIMARY KEY (id)
+);";
 
-$app->get('/db/', function() use($app) {
-  $st = $app['pdo']->prepare('SELECT name FROM test_table');
-  $st->execute();
+$query2 = "CREATE OR REPLACE FUNCTION update_update_at_column()  
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = now();
+    RETURN NEW; 
+END;
+$$ language 'plpgsql';";
 
-  $names = array();
-  while ($row = $st->fetch(PDO::FETCH_ASSOC)) {
-    $app['monolog']->addDebug('Row ' . $row['name']);
-    $names[] = $row;
-  }
+$query3 = "CREATE TRIGGER update_members_updated_at BEFORE UPDATE ON members FOR EACH ROW EXECUTE PROCEDURE update_update_at_column();";
 
-  return $app['twig']->render('database.twig', array(
-    'names' => $names
-  ));
-});
+$query4 =  "CREATE OR REPLACE FUNCTION update_created_at_column()  
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.created_at = now();
+    RETURN NEW; 
+END;
+$$ language 'plpgsql';";
 
+$query5 = "CREATE TRIGGER update_members_created_at BEFORE INSERT ON members FOR EACH ROW EXECUTE PROCEDURE update_created_at_column();";
 
-// Connecting, selecting database
-//$dbconn = pg_connect("host=$dbopts["user"] dbname=publishing user=www password=foo")
-//    or die('Could not connect: ' . pg_last_error());
+$result1 = pg_query($dbconn, $query1);
+$result2 = pg_query($dbconn, $query2);
+$result3 = pg_query($dbconn, $query3);
 
-// Performing SQL query
-//$query = 'SELECT * FROM authors';
-//$result = pg_query($query) or die('Query failed: ' . pg_last_error());
+if ((!$result1) || (!$result2) || (!$result3)){
+  $message  = 'Invalid query: ';
+  die($message);
+}
 
-// Printing results in HTML
-//echo "<table>\n";
-//while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
-//    echo "\t<tr>\n";
-//    foreach ($line as $col_value) {
-//        echo "\t\t<td>$col_value</td>\n";
-//    }
-//    echo "\t</tr>\n";
-//}
-//echo "</table>\n";
+pg_close($dbconn);
 
-// Free resultset
-//pg_free_result($result);
-
-// Closing connection
-//pg_close($dbconn);
-
+include_once("./views/home.html"); 
 ?>
