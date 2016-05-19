@@ -44,6 +44,11 @@ $dbconn = pg_connect(getenv('CONN_STRING'));
 //   die($message);
 // }
 
+$query = "select * from members;";
+$result = pg_query($dbconn, $query);
+
+printf($result);
+
 pg_close($dbconn);
 
 include_once("./views/home.html"); 
