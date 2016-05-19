@@ -13,26 +13,32 @@ $query1 = "CREATE TABLE members (
   PRIMARY KEY (id)
 );";
 
-$query2 = "CREATE TRIGGER trUserCreationDate ON members
-  FOR INSERT 
-  AS
-  UPDATE members SET members.created_at=getdate()
-  FROM members INNER JOIN Inserted ON members.id= Inserted.id";
+$query2 = "CREATE OR REPLACE FUNCTION update_update_at_column()  
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = now();
+    RETURN NEW; 
+END;
+$$ language 'plpgsql';";
 
-$query3 = "CREATE TRIGGER trUserUpdateDate ON members
-  FOR UPDATE 
-  AS
-  UPDATE members SET members.updated_at=getdate()
-  FROM members INNER JOIN Inserted ON members.id= Inserted.id";
+$query3 = "CREATE TRIGGER update_members_update_at BEFORE UPDATE ON members FOR EACH ROW EXECUTE PROCEDURE update_update_at_column();";
 
+$query4 =  "CREATE OR REPLACE FUNCTION update_created_at_column()  
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.created_at = now();
+    RETURN NEW; 
+END;
+$$ language 'plpgsql';";
+
+$query5 = "CREATE TRIGGER update_members_update_at BEFORE INSERT ON members FOR EACH ROW EXECUTE PROCEDURE update_created_at_column();";
 
 $result1 = pg_query($dbconn, $query1);
 $result2 = pg_query($dbconn, $query2);
 $result3 = pg_query($dbconn, $query3);
 
 if ((!$result1) || (!$result2) || (!$result3)){
-  $message  = 'Invalid query: ' . "\n";
-  $message .= 'Whole query: ' . $query;
+  $message  = 'Invalid query: ';
   die($message);
 }
 
