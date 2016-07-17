@@ -33,7 +33,6 @@
         // insert data
         if ($valid) {
             $pdo = Database::connect();
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $sql = "INSERT INTO members (display_name,position,gc_seals) values(?, ?, ?)";
             $q = $pdo->prepare($sql);
             $q->execute(array($display_name,$position,$gc_seals));
