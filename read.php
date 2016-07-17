@@ -9,11 +9,7 @@
         header("Location: mutleyafkceles.php");
     } else {
         $pdo = Database::connect();
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $sql = "SELECT * FROM members where id = ?";
-        $q = $pdo->prepare($sql);
-        $q->execute(array($id));
-        $data = $q->fetch(PDO::FETCH_ASSOC);
         Database::disconnect();
     }
 ?>
