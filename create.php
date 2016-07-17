@@ -34,8 +34,6 @@
         if ($valid) {
             $pdo = Database::connect();
             $sql = "INSERT INTO members (display_name,position,gc_seals) values(?, ?, ?)";
-            $q = $pdo->prepare($sql);
-            $q->execute(array($display_name,$position,$gc_seals));
             Database::disconnect();
             header("Location: mutleyafkceles.php");
         }
