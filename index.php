@@ -1,5 +1,5 @@
 <?php 
-$dbconn = pg_connect(getenv('CONN_STRING'));
+// $dbconn = pg_connect(getenv('CONN_STRING'));
 
 // $query1 = "CREATE TABLE members (
 //   id SERIAL NOT NULL,
@@ -44,7 +44,7 @@ $dbconn = pg_connect(getenv('CONN_STRING'));
 //   die($message);
 // }
 
-pg_close($dbconn);
+// pg_close($dbconn);
 
 include_once("./views/home.html"); 
 ?>
